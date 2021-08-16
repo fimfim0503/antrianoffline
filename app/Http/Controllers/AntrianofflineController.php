@@ -2,8 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use App\Models\Poli;
+use App\Models\Antrian;
+use App\Models\Jadwalpoli;
 use Illuminate\Http\Request;
+use PhpParser\Node\Stmt\TryCatch;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+
+
 
 class AntrianofflineController extends Controller
 {
@@ -14,12 +23,38 @@ class AntrianofflineController extends Controller
      */
     public function index()
     {
+
+
         return view('index');
     }
 
     public function lama()
     {
-        return view('lama');
+
+
+        $tanggal = Carbon::now();
+
+        // return $tanggal;    
+        $day = date('D', strtotime($tanggal));
+
+        $dayList = array(
+            'Sun' => 'Minggu',
+            'Mon' => 'Senin',
+            'Tue' => 'Selasa',
+            'Wed' => 'Rabu',
+            'Thu' => 'Kamis',
+            'Fri' => 'Jumat',
+            'Sat' => 'Sabtu'
+        );
+        $hari = $dayList[$day];
+
+        $items = Jadwalpoli::with(['poli'])
+            ->wherenamahari($hari)
+            ->get();
+
+        return view('lama', [
+            'items' => $items,
+        ]);
     }
 
     public function baru()
@@ -31,11 +66,103 @@ class AntrianofflineController extends Controller
     {
         $this->validate($request, [
             'norm' => 'required|numeric',
-            'klinik' => 'required|numeric',
-            'carabayar' => 'required|numeric'
+            'klinik' => 'required|max:3',
+            'carabayar' => 'required|max:1'
         ]);
 
-        return $request;
+        $tanggal = Carbon::now();
+
+        // return $tanggal;    
+        $day = date('D', strtotime($tanggal));
+
+        $dayList = array(
+            'Sun' => 'Minggu',
+            'Mon' => 'Senin',
+            'Tue' => 'Selasa',
+            'Wed' => 'Rabu',
+            'Thu' => 'Kamis',
+            'Fri' => 'Jumat',
+            'Sat' => 'Sabtu'
+        );
+        $hari = $dayList[$day];
+        $taglpjg = date('Y-m-d');
+
+        //mendapatkan kode poli
+        $getkodepoli = $request->klinik;
+
+
+        //mendapatkan nama poli
+        $namapoli = Poli::where('kodepoli', $getkodepoli)->first('namapoli');
+
+        //mendapatkan kodeantri
+        $results = Poli::where('kodepoli', '=', $getkodepoli)
+            ->select('kodeantri')
+            ->get();
+
+
+
+        $max1 = Antrian::where('tanggalperiksa', '=', $taglpjg)
+            ->where('kodepoli', $getkodepoli)
+            ->max('NOMOR');
+
+        $gethari = Jadwalpoli::where('kodepoli', $getkodepoli)
+            ->wherenamahari($hari)
+            ->wherestatus(1)
+            ->first();
+
+        $inputrm = $request->norm;
+
+        $apirm = Http::get('http://exampleaksessim.test:8080/api/pasien/' . $inputrm)->json();
+
+
+
+
+
+
+
+
+        $harisama = Antrian::where('norm', '=', $request->norm)
+            ->wheretanggalperiksa($taglpjg)
+            ->first('tanggalperiksa');
+
+        if (empty($apirm)) {
+            return redirect('/lama')->with('status', 'No Rekam Medik Tidak ditemukan, silahkan isi dengan benar atau tanyakakan ke petugas');
+        } elseif ($max1 >= $gethari->kuota) {
+            return redirect('/lama')->with('status', 'No Antrian Habis');
+        } elseif ($harisama == !null) {
+            return redirect('/lama')->with('status', 'Anda Sudah Mendapatkan No Antrian');
+        } else {
+            $nomr2 = $apirm['NAMA'];
+
+
+            $input = new Antrian;
+
+            $input->nomorkartu = 0;
+            $input->nik = 0;
+            $input->notelp = 0;
+            $input->kodepoli = $getkodepoli;
+            $input->norm = $request->norm;
+            $input->name = $nomr2;
+            $input->tanggalperiksa = $taglpjg;
+            $input->kodedokter = 0;
+            $input->jampraktek = 0;
+            $input->jeniskunjungan = 1;
+            $input->nomorreferensi = 1;
+            $input->kodebooking = Str::random(20);
+            $input->waktuperiksa = 000000;
+
+            // $results = Poli::where('kodepoli', '=', $request->kodepoli)
+            //     ->select('kodeantri')
+            //     ->get();
+            $input->kodeantri = $results[0]->kodeantri;;
+            $input->namapoli = $namapoli;
+
+
+            $input->namadokter = 'tidka ada';
+            $input->save();
+
+            return $input;
+        }
     }
 
     /**

@@ -41,22 +41,33 @@
                         <div class="col-auto">
                           <label for="norm" class="col-form-label" style="font-size: 20px;" >No Rekam Medik</label>
                         </div> 
+
                         <div class="col-auto">
-                          <input type="text" id="norm" value="{{@old('title')}}" name="norm" class="form-control" aria-describedby="passwordHelpInline" style="font-size: 24px; " placeholder="Isi  disini">
+                          <input type="text" id="norm" value="{{@old('norm')}}" name="norm" 
+                              
+                          class="form-control @error('norm') is-invalid
+                            
+                          @enderror " aria-describedby="passwordHelpInline" style="font-size: 24px; " placeholder="Isi  disini" required>
+                          @error('norm')
+                          <div class="invalid-feedback" >
+                              {{ $message }}
+                          </div>
+                        @enderror
                         </div>
                         <div class="col-auto">
                           <span id="passwordHelpInline" class="form-text">
                             Silahkan masukan No Rekam Medik 
                           </span>
                         </div>
-                        
-                        
+  
                         <div class="form-group" style="margin-bottom: 20px; text-align: left; ">
                           <label for="alamat" style="font-size: 20px;" > <strong>Silahkan PIlih Klinik Tujuan </strong> </label>
                           <select class="form-select" aria-label="Default select example" name="klinik" >
                             <option selected>Pilih Disini</option>
-                            <option value="1">Mata</option>
-                            <option value="2">Bedah</option>
+                            @foreach ($items as $pol )
+                              <option value="{{ $pol->poli->kodepoli }}">{{ $pol->poli->namapoli }}</option>  
+                            @endforeach
+                            
                           </select>
                         </div>	
                         <div class="form-group" style="margin-bottom: 20px; text-align: left; ">
@@ -82,6 +93,12 @@
                           
                         </div>	
                       </form>
+
+                      @if (session('status'))
+                      <div class="alert alert-danger">
+                          {{ session('status') }}
+                      </div>
+                  @endif
 
                       </div>
 
