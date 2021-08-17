@@ -26,3 +26,4 @@ Route::get('/lama', [AntrianofflineController::class, 'lama'])->name('lama');
 Route::get('/printlama', [AntrianofflineController::class, 'printlama'])->name('printlama');
 Route::get('/baru', [AntrianOfflineController::class, 'baru'])->name('baru');
 Route::post('/createlama', [AntrianOfflineController::class, 'createlama'])->name('createlama');
+Route::post('/createbaru', [AntrianOfflineController::class, 'createbaru'])->name('createbaru');

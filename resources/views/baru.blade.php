@@ -26,56 +26,87 @@
                 <div class="card-body">
                   
                   <!-- isi form -->
-                  <form class="form-inline" style="padding-top: 20px;">
+                  <form action="{{ route('createbaru') }}" method="post" class="form-inline" style="padding-top: 20px;">
+                    @csrf
                     <div class="form-group" style="margin-bottom: 20px;">
                       <label for="nama"> <strong>Nama Anda:</strong> </label>
-                      <input type="text" class="form-control">
+                      <input type="text" class="form-control @error('nama') is-invalid @enderror " value="{{@old('nama')}}" name="nama"  >
+                      @error('nama')
+                      <div class="invalid-feedback" >
+                          {{ $message }}
+                      </div>
+                    @enderror
                       <p class="form-text">Isikan Nama sesuai KTP </p>
                     </div>
                     <div class="form-group" style="margin-bottom: 20px;" >
                       <label for="alamat"> <strong>NO. KTP</strong>  :</label>
-                      <input type="text" class="form-control" id="alamat">
+                      <input type="text" class="form-control @error('ktp') is-invalid @enderror" id="alamat" value="{{@old('ktp')}}" name="ktp">
+                      @error('ktp')
+                      <div class="invalid-feedback" >
+                          {{ $message }}
+                      </div>
+                    @enderror
                       
                     </div>		
                     <div class="form-group" style="margin-bottom: 20px;">
                       <label for="alamat"> <strong>No. Handphone</strong> </label>
-                      <input type="text" class="form-control" id="alamat">
+                      <input type="text" class="form-control @error('notelp') is-invalid @enderror " id="alamat" value="{{@old('notelp')}}" name="notelp">
+                      @error('notelp')
+                      <div class="invalid-feedback" >
+                          {{ $message }}
+                      </div>
+                    @enderror
                     </div>		
-                    <div class="form-group" style="margin-bottom: 20px;">
-                      <label for="alamat"> <strong>Tanggal Lahir</strong> </label>
-                      <input type="date" class="form-control" id="alamat">
-                    </div>	
-                    <div class="form-group" style="margin-bottom: 20px;">
-                      <label for="alamat"> <strong>Silahkan PIlih Klinik Tujuan</strong> </label>
-                      <select class="form-select" aria-label="Default select example">
-                        <option selected>Pilih disini</option>
-                        <option value="1">Bayar Umum </option>
-                        <option value="2">BPJS</option>
+                    	
+                    <div class="form-group" style="margin-bottom: 20px; text-align: left; ">
+                      <label for="alamat" style="font-size: 20px;" > <strong>Silahkan PIlih Klinik Tujuan </strong> </label>
+                      <select class="form-select" aria-label="Default select example" name="klinik" >
+                        <option selected>Pilih Disini</option>
+                        @foreach ($items as $pol )
+                          <option value="{{ $pol->poli->kodepoli }}">{{ $pol->poli->namapoli }}</option>  
+                        @endforeach
+                        
                       </select>
-                    </div>	
-                    <div class="form-group" style="margin-bottom: 20px;">
-                      <label for="alamat"> <strong>Silahkan PIlih Cara Bayar </strong> </label>
-                      <select class="form-select" aria-label="Default select example">
+                      @error('klinik')
+                      <div class="invalid-feedback" >
+                          {{ $message }}
+                      </div>
+                    @enderror
+                    </div>
+                    <div class="form-group" style="margin-bottom: 20px; text-align: left; ">
+                      <label for="alamat" style="font-size: 20px;" > <strong>Silahkan PIlih Cara Bayar </strong> </label>
+                      <select class="form-select" aria-label="Default select example" name="carabayar" >
                         <option selected>Pilih disini</option>
-                        <option value="1">Bayar Umum </option>
-                        <option value="2">BPJS</option>
+                        <option value="Umum">Bayar Umum </option>
+                        <option value="BPJS">BPJS</option>
                       </select>
+                      @error('carabayar')
+                      <div class="invalid-feedback" >
+                          {{ $message }}
+                      </div>
+                    @enderror
                     </div>	
 
                     
                    
                   
                     <div style="text-align: center; margin-top: 30px;  ">
-                      <a href="">
-                        <button type="submit" class="btn btn-danger" style="font-size: 30px;border-radius: 15px; margin-right: 100px;">Print Antrian</button>
-                      </a>
-                      <a href="{{ url('/') }}">
-                        <button type="submit" class="btn btn-success" style="font-size: 30px;border-radius: 15px;">Kembali</button>
+                          
+                      <button type="submit" class="btn btn-danger" style="font-size: 30px;border-radius: 15px; ">Print Antrian</button>
+                    
+                    {{-- <a href="{{ url('/') }}">
+                      <button type="submit" class="btn btn-success" style="font-size: 30px;border-radius: 15px; margin-left: 30px;">Kembali</button>
+                    </a> --}}
 
-                      </a>
-
-                    </div>	
+                    <a class="btn btn-success" style="font-size: 30px;border-radius: 15px; margin-left: 30px;" href="{{ route('index') }}">Kembali</a>
+                    
+                  </div>		
                   </form>
+                  @if (session('status'))
+                      <div class="alert alert-danger">
+                          {{ session('status') }}
+                      </div>
+                  @endif
                   <!-- end isi form -->
                   
                 </div>

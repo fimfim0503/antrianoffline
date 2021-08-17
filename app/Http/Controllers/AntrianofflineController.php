@@ -59,7 +59,29 @@ class AntrianofflineController extends Controller
 
     public function baru()
     {
-        return view('baru');
+        $tanggal = Carbon::now();
+
+        // return $tanggal;    
+        $day = date('D', strtotime($tanggal));
+
+        $dayList = array(
+            'Sun' => 'Minggu',
+            'Mon' => 'Senin',
+            'Tue' => 'Selasa',
+            'Wed' => 'Rabu',
+            'Thu' => 'Kamis',
+            'Fri' => 'Jumat',
+            'Sat' => 'Sabtu'
+        );
+        $hari = $dayList[$day];
+
+        $items = Jadwalpoli::with(['poli'])
+            ->wherenamahari($hari)
+            ->get();
+
+        return view('baru', [
+            'items' => $items,
+        ]);
     }
 
     public function createlama(Request $request)
@@ -129,8 +151,8 @@ class AntrianofflineController extends Controller
 
         if (empty($apirm)) {
             return redirect('/lama')->with('status', 'No Rekam Medik Tidak ditemukan, silahkan isi dengan benar atau tanyakakan ke petugas');
-            // } elseif ($harisama == !null) {
-            //     return redirect('/lama')->with('status', 'Anda Sudah Mendapatkan No Antrian');
+        } elseif ($harisama == !null) {
+            return redirect('/lama')->with('status', 'Anda Sudah Mendapatkan No Antrian');
         } elseif ($max1 >= $gethari->kuota) {
             return redirect('/lama')->with('status', 'No Antrian Habis');
         } else {
@@ -170,10 +192,116 @@ class AntrianofflineController extends Controller
         }
     }
 
-    // public function printlama()
-    // {
-    //     return view('printlama');
-    // }
+    public function createbaru(Request $request)
+    {
+
+
+        $this->validate($request, [
+            'nama' => 'required',
+            'ktp' => 'required|numeric|min:16',
+            'notelp' => 'required|max:15',
+            'klinik' => 'required|max:3',
+            'carabayar' => 'required|max:10'
+        ]);
+
+        $tanggal = Carbon::now();
+
+        // return $tanggal;    
+        $day = date('D', strtotime($tanggal));
+
+        $dayList = array(
+            'Sun' => 'Minggu',
+            'Mon' => 'Senin',
+            'Tue' => 'Selasa',
+            'Wed' => 'Rabu',
+            'Thu' => 'Kamis',
+            'Fri' => 'Jumat',
+            'Sat' => 'Sabtu'
+        );
+        $hari = $dayList[$day];
+        $taglpjg = date('Y-m-d');
+
+        //mendapatkan kode poli
+        $getkodepoli = $request->klinik;
+
+
+
+        //mendapatkan nama poli
+        $namapoli = Poli::where('kodepoli', $getkodepoli)
+            ->select('namapoli')
+            ->get();
+
+        //mendapatkan kodeantri
+        $results = Poli::where('kodepoli', '=', $getkodepoli)
+            ->select('kodeantri')
+            ->get();
+
+        $max1 = Antrian::where('tanggalperiksa', '=', $taglpjg)
+            ->where('kodepoli', $getkodepoli)
+            ->max('NOMOR');
+
+
+
+
+
+        $gethari = Jadwalpoli::where('kodepoli', $getkodepoli)
+            ->wherenamahari($hari)
+            ->wherestatus(1)
+            ->first();
+
+
+
+
+
+
+
+        $harisama = Antrian::where('nik', '=', $request->ktp)
+            ->wheretanggalperiksa($taglpjg)
+            ->first('nik');
+
+
+        if ($harisama == !null) {
+            return redirect('/baru')->with('status', 'Anda Sudah Mendapatkan No Antrian');
+        } elseif ($max1 >= $gethari->kuota) {
+            return redirect('/baru')->with('status', 'No Antrian Habis');
+        } else {
+
+
+
+            $input = new Antrian;
+
+            $input->nomorkartu = 0;
+            $input->nik = $request->ktp;
+            $input->notelp = $request->notelp;
+            $input->kodepoli = $getkodepoli;
+            $input->norm = 0;
+            $input->name = $request->nama;
+            $input->tanggalperiksa = $taglpjg;
+            $input->kodedokter = 0;
+            $input->jampraktek = 0;
+            $input->jeniskunjungan = 1;
+            $input->nomorreferensi = 1;
+            $input->carabayar = $request->carabayar;
+            $input->kodebooking = Str::random(20);
+            $input->waktuperiksa = 000000;
+
+            // $results = Poli::where('kodepoli', '=', $request->kodepoli)
+            //     ->select('kodeantri')
+            //     ->get();
+            $input->kodeantri = $results[0]->kodeantri;;
+            $input->namapoli = $namapoli[0]->namapoli;
+
+
+            $input->namadokter = 'tidka ada';
+            $input->save();
+
+
+            // return $input;
+            return view('printbaru', ['input' => $input]);
+        }
+    }
+
+
 
     /**
      * Show the form for creating a new resource.

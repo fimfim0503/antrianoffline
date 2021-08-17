@@ -14,7 +14,7 @@
             <div style="text-align: center; ">
                 <div style="margin-bottom: 20px;  border-bottom:solid 3px black;">
                     <h4>Antrian Pendaftaran Rawat Jalan </h4>
-                    <h4> <strong>PASIEN LAMA </strong> </h4>
+                    <h4> <strong>PASIEN BARU </strong> </h4>
                     <h4 style="">RSU Dr. Slamet Garut </h4>    
                 </div >
                 <div style="color: black ; border-bottom:solid 3px black; height:50px; padding-top:5px;">
@@ -30,16 +30,22 @@
                 </h1>
     
                 <h6>
-                    No. RM : 
-                </h6>
-                <h5  >
-                    <strong >{{ $input->norm }}</strong> 
-                </h5>
-                <h6>
                    Nama :
                 </h6>
                 <h5>
                     <strong>{{ $input->name }}</strong> 
+                </h5>
+                <h6>
+                    No KTP 
+                </h6>
+                <h5  >
+                    <strong >{{ $input->nik }}</strong> 
+                </h5>
+                <h6>
+                    No Telp 
+                </h6>
+                <h5  >
+                    <strong >{{ $input->notelp }}</strong> 
                 </h5>
                 <h6>
                    Cara Bayar :

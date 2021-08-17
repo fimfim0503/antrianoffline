@@ -29,7 +29,7 @@
 			<div style="border-top: 20px; padding-top: 99px;" >
                 <p style="margin-top: 20px;">
                     <a href="{{ route('lama') }}">
-                        <button class="btn btn-lg btn-primary" style="font-size: 56px;"  >Pasien Lama1</button></a>
+                        <button class="btn btn-lg btn-primary" style="font-size: 56px;"  >Pasien Lama</button></a>
                     
                 </p>
                                 
