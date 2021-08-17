@@ -23,5 +23,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [AntrianofflineController::class, 'index'])->name('index');
 Route::get('/lama', [AntrianofflineController::class, 'lama'])->name('lama');
+Route::get('/printlama', [AntrianofflineController::class, 'printlama'])->name('printlama');
 Route::get('/baru', [AntrianOfflineController::class, 'baru'])->name('baru');
 Route::post('/createlama', [AntrianOfflineController::class, 'createlama'])->name('createlama');

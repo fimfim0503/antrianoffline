@@ -67,7 +67,7 @@ class AntrianofflineController extends Controller
         $this->validate($request, [
             'norm' => 'required|numeric',
             'klinik' => 'required|max:3',
-            'carabayar' => 'required|max:1'
+            'carabayar' => 'required|max:10'
         ]);
 
         $tanggal = Carbon::now();
@@ -91,33 +91,35 @@ class AntrianofflineController extends Controller
         $getkodepoli = $request->klinik;
 
 
+
         //mendapatkan nama poli
-        $namapoli = Poli::where('kodepoli', $getkodepoli)->first('namapoli');
+        $namapoli = Poli::where('kodepoli', $getkodepoli)
+            ->select('namapoli')
+            ->get();
 
         //mendapatkan kodeantri
         $results = Poli::where('kodepoli', '=', $getkodepoli)
             ->select('kodeantri')
             ->get();
 
-
-
         $max1 = Antrian::where('tanggalperiksa', '=', $taglpjg)
             ->where('kodepoli', $getkodepoli)
             ->max('NOMOR');
+
+
+
+
 
         $gethari = Jadwalpoli::where('kodepoli', $getkodepoli)
             ->wherenamahari($hari)
             ->wherestatus(1)
             ->first();
 
+
+
         $inputrm = $request->norm;
 
         $apirm = Http::get('http://exampleaksessim.test:8080/api/pasien/' . $inputrm)->json();
-
-
-
-
-
 
 
 
@@ -127,10 +129,10 @@ class AntrianofflineController extends Controller
 
         if (empty($apirm)) {
             return redirect('/lama')->with('status', 'No Rekam Medik Tidak ditemukan, silahkan isi dengan benar atau tanyakakan ke petugas');
+            // } elseif ($harisama == !null) {
+            //     return redirect('/lama')->with('status', 'Anda Sudah Mendapatkan No Antrian');
         } elseif ($max1 >= $gethari->kuota) {
             return redirect('/lama')->with('status', 'No Antrian Habis');
-        } elseif ($harisama == !null) {
-            return redirect('/lama')->with('status', 'Anda Sudah Mendapatkan No Antrian');
         } else {
             $nomr2 = $apirm['NAMA'];
 
@@ -148,6 +150,7 @@ class AntrianofflineController extends Controller
             $input->jampraktek = 0;
             $input->jeniskunjungan = 1;
             $input->nomorreferensi = 1;
+            $input->carabayar = $request->carabayar;
             $input->kodebooking = Str::random(20);
             $input->waktuperiksa = 000000;
 
@@ -155,15 +158,22 @@ class AntrianofflineController extends Controller
             //     ->select('kodeantri')
             //     ->get();
             $input->kodeantri = $results[0]->kodeantri;;
-            $input->namapoli = $namapoli;
+            $input->namapoli = $namapoli[0]->namapoli;
 
 
             $input->namadokter = 'tidka ada';
             $input->save();
 
-            return $input;
+
+
+            return view('printlama', ['input' => $input]);
         }
     }
+
+    // public function printlama()
+    // {
+    //     return view('printlama');
+    // }
 
     /**
      * Show the form for creating a new resource.

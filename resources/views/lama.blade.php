@@ -74,8 +74,8 @@
                           <label for="alamat" style="font-size: 20px;" > <strong>Silahkan PIlih Cara Bayar </strong> </label>
                           <select class="form-select" aria-label="Default select example" name="carabayar" >
                             <option selected>Pilih disini</option>
-                            <option value="1">Bayar Umum </option>
-                            <option value="2">BPJS</option>
+                            <option value="Umum">Bayar Umum </option>
+                            <option value="BPJS">BPJS</option>
                           </select>
                         </div>	
                         

@@ -29,12 +29,12 @@
 			<div style="border-top: 20px; padding-top: 99px;" >
                 <p style="margin-top: 20px;">
                     <a href="{{ route('lama') }}">
-                        <button class="btn btn-lg btn-primary" style="font-size: 56px;"  >Pasien Lama</button></a>
+                        <button class="btn btn-lg btn-primary" style="font-size: 56px;"  >Pasien Lama1</button></a>
                     
                 </p>
                                 
                 <p style="margin-top: 30px; ">
-                    <a href="{{ url('lama') }}"><button class="btn btn-lg btn-danger" style="font-size: 56px;"  >Pasien Baru</button></a>
+                    <a href="{{ url('baru') }}"><button class="btn btn-lg btn-danger" style="font-size: 56px;"  >Pasien Baru</button></a>
                     
                 </p>
                 <p  style="color: white; margin-top: 100px;">Ket : Pasien lama adalah pasien yang pernah berobat di RSU dr. Slamet Garut</p>
