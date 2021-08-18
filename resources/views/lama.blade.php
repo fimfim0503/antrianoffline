@@ -30,7 +30,7 @@
             </div>
         
             <!-- card -->
-            <div class="card" style=" text-align: center; margin-left: 150px; margin-right: 150px; height: 480px; border-radius: 25px;">
+            <div class="card" style=" text-align: center; margin-left: 100px; margin-right: 150px; width:900px; height: 480px; border-radius: 25px;">
                 
                 <div class="card-body">
                   
@@ -55,8 +55,8 @@
                         @enderror
                         </div>
                         <div class="col-auto">
-                          <span id="passwordHelpInline" class="form-text">
-                            Silahkan masukan No Rekam Medik 
+                          <span id="passwordHelpInline" class="form-text" style="color: red">
+                            Input No Rekam Medik Tanpa angka Nol (0)  di depannya 
                           </span>
                         </div>
   
